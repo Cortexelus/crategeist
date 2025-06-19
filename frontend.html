@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICP Collector Demo</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    th { background: #f0f0f0; }
+    caption { font-weight: bold; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>ICP Collectors &amp; Purchases</h1>
+
+  <table id="collectors">
+    <caption>Collectors</caption>
+    <thead>
+      <tr>
+        <th>ID</th><th>Timestamp</th><th>Name</th><th>Wallet</th><th>Text</th>
+      </tr>
+    </thead>
+    <tbody id="collectors-body"></tbody>
+  </table>
+
+  <table id="purchases">
+    <caption>Purchases</caption>
+    <thead>
+      <tr>
+        <th>ID</th><th>Timestamp</th><th>Wallet</th><th>Tx Hash</th><th>Link</th><th>Text</th>
+      </tr>
+    </thead>
+    <tbody id="purchases-body"></tbody>
+  </table>
+
+  <!-- Lightweight ICP agent via ESM CDN (no bundler needed) -->
+  <script type="module">
+    import { HttpAgent, Actor } from "https://esm.sh/@dfinity/agent@0.16.0";
+    // After `dfx generate`, this file is emitted in your React/vanilla folder.
+    import { idlFactory as backendIDL } from "./declarations/hello_backend/hello_backend.did.js";
+
+    // 🔁  Replace with your actual backend canister ID (local or mainnet)
+    const canisterId = "yhlsk-rqaaa-aaaab-qacfq-cai";
+
+    // For local development the default host is http://127.0.0.1:4943
+    const agent = new HttpAgent({ host: window.location.protocol.startsWith("http") ? undefined : "http://127.0.0.1:4943" });
+
+    // Fetch root key only when running locally (needed for self‑signed cert)
+    if (location.hostname === "127.0.0.1") {
+      await agent.fetchRootKey();
+    }
+
+    const backend = Actor.createActor(backendIDL, { agent, canisterId });
+
+    /** Fill <tbody> with rows */
+    function populate(tbody, rows, cols) {
+      tbody.innerHTML = "";
+      for (const r of rows) {
+        const tr = document.createElement("tr");
+        for (const c of cols) {
+          const td = document.createElement("td");
+          td.textContent = r[c];
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      }
+    }
+
+    async function refresh() {
+      // Collectors
+      const collectorsJson = await backend.get_collectors_json();
+      const collectors = JSON.parse(collectorsJson);
+      populate(document.getElementById("collectors-body"), collectors, [
+        "collector_id",
+        "timestamp",
+        "name",
+        "wallet",
+        "text",
+      ]);
+
+      // Purchases
+      const purchasesJson = await backend.get_purchases_json();
+      const purchases = JSON.parse(purchasesJson);
+      populate(document.getElementById("purchases-body"), purchases, [
+        "purchase_id",
+        "timestamp",
+        "wallet",
+        "tx_id",
+        "link",
+        "text",
+      ]);
+    }
+
+    // auto‑run on load
+    refresh();
+  </script>
+</body>
+</html>
