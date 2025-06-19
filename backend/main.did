@@ -1,0 +1,10 @@
+service : {
+  addCollector : (text, text, text) -> (nat);
+  editCollector : (text, opt text, opt text) -> (bool);
+  deleteCollector : (text) -> (bool);
+  deleteAllCollectors : () -> ();
+  getCollectors : () -> (vec record { nat; nat64; text; text; text });
+
+  addPurchase : (text, text, text, text) -> (nat);
+  getPurchases : () -> (vec record { nat; nat64; text; text; text; text });
+}
