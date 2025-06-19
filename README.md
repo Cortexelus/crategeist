@@ -118,7 +118,10 @@ In conclusion, this agentic networks incentivizes the creation of music very dif
 
 
 
-
+## Technology used
+- ICP Canister backend for portal
+- Llama3.1, ChatGPT, Gemma 3 for agents. Local models wrapped in ollama 
+- Stable Audio (for generating the music)
 
 ![logo](https://github.com/user-attachments/assets/c8872fde-01f1-4be6-a7b1-99ff1ac2dc9b)
 
