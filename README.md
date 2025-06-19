@@ -109,7 +109,7 @@ Metadata includes scent-coded IPFS hashes (catnip-scented metadata emulation)
 
 This is then fed to ai music model Stable Audio
 
-**CATHEXIS.MP3**
+**[CATHEXIS.MP3]([url](https://dadabots.com/files/CATHEXIS.mp3))**
 
 
 ## Conclusion
